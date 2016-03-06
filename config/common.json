@@ -1,0 +1,71 @@
+{
+  "app" : {
+    "name" : "rpi-rest-leds",
+    "session" : {
+      "timeout" : 30
+    }
+  },
+  "express" : {
+    "json" : {},
+    "urlencoded" : {
+      "extended" : false
+    },
+    "cookieParser" : {},
+    "jsonp"       : true,
+    "prettyHtml"  : true,
+    "filter"      : {
+      "rules" : "json|text|javascript|css|html",
+      "by"    : "Content-Type",
+      "level" : 9
+    },
+    "viewEngine" : "jade",
+    "session" : {
+      "options" : {
+        "cookie" : {}
+      }
+    },
+    "vhost" : {
+      "enable"      : false
+    }
+  },
+  "router" : {
+    "routes" : "app/routes",
+    "controllers" : "app/controllers"
+  },
+  "render" : {
+    "app" : {
+      "name" : "ecrm-api"
+    },
+    "property" : {
+      "title"     : "YOUR_WEB_SITE",
+      "language"  : "en",
+      "meta"      : [
+        { "name"  : "charset", "value" : "utf-8" },
+        { "name"  : "fragment", "value" : "!" },
+        { "name"  : "keywords", "value" : "ecrm-api Keywords" },
+        { "name"  : "description", "value" : "ecrm-api Site description" }
+      ],
+      "httpEquiv" : [
+        { "name"  : "X-UA-Compatible", "value" : "IE=edge" },
+        { "name"  : "Content-type", "value" : "text/html; charset=UTF-8" }
+      ],
+      "assets" : {
+        "header" : {
+          "css" : [
+            { "link" : "assets/css/dist/application.min.css", "media" : "screen" },
+            { "link" : "assets/css/dist/static-components.min.css", "media" : "screen" }
+          ],
+          "js" : [
+            { "link" : "assets/js/dist/external-addons.min.js" },
+            { "link" : "assets/js/dist/angular-components.min.js" }
+          ]
+        }
+      },
+      "social" : {
+        "facebook" : [],
+        "google"   : [],
+        "twitter"  : []
+      }
+    }
+  }
+}

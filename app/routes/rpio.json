@@ -1,0 +1,10 @@
+[
+  {
+    "method"  : "get",
+    "path": "/rpio/test",
+    "controller" : {
+      "name"  : "rpio",
+      "fn"  : "test"
+    }
+  }
+]

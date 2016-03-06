@@ -1,0 +1,13 @@
+{
+  "directory" : [
+   { "models"      : "app/models" },
+   { "controllers" : "app/controllers" },
+   { "views"       : "./" },
+   { "public"      : "./" },
+   { "icons"       : "./" }
+ ],
+  "encrypt_key" : {
+    "key"   : "6e67ae372ad6d85cfad1abc366823e28",
+    "type"  : "hex"
+  }
+}

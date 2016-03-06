@@ -1,0 +1,32 @@
+{
+  "config" : "./config",
+  "env" : {
+    "development" : {
+      "logger" : {
+        "level"  : "debug",
+        "rotate" : {
+          "path" : "./logs",
+          "name" : "rpi-rest-leds.log"
+        }
+      }
+    },
+    "staging" : {
+      "logger" : {
+        "level"  : "info",
+        "rotate" : {
+          "path" : "/var/log",
+          "name" : "rpi-rest-leds.log"
+        }
+      }
+    },
+    "production" : {
+      "logger" : {
+        "level"  : "warning",
+        "rotate" : {
+          "path" : "/var/log",
+          "name" : "rpi-rest-leds.log"
+        }
+      }
+    }
+  }
+}

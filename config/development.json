@@ -1,0 +1,7 @@
+{
+  "env" : "development",
+  "protocol" : {
+    "type" : "http",
+    "port" : 3001
+  }
+}
