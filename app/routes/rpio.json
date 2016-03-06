@@ -1,10 +1,34 @@
 [
   {
     "method"  : "get",
-    "path": "/rpio/test",
+    "path": "/rpio",
     "controller" : {
       "name"  : "rpio",
-      "fn"  : "test"
+      "fn"  : "getConfig"
+    }
+  },
+  {
+    "method"  : "put",
+    "path": "/rpio/power/on/pin/:pin/mode/standard",
+    "controller" : {
+      "name"  : "rpio",
+      "fn"  : "setStandard"
+    }
+  },
+  {
+    "method"  : "put",
+    "path": "/rpio/power/off/pin/:pin",
+    "controller" : {
+      "name"  : "rpio",
+      "fn"  : "setOff"
+    }
+  },
+  {
+    "method"  : "put",
+    "path": "/rpio/power/on/pin/:pin/mode/pulse",
+    "controller" : {
+      "name"  : "rpio",
+      "fn"  : "setPulse"
     }
   }
 ]

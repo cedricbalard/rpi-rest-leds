@@ -1,0 +1,10 @@
+[
+  {
+    "method"  : "get",
+    "path": "*",
+    "controller" : {
+      "name"  : "default",
+      "fn"  : "home"
+    }
+  }
+]
