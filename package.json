@@ -1,0 +1,30 @@
+{
+  "name": "rpi-rest-leds",
+  "version": "0.0.1",
+  "description": "API Rest to handle LEDS stripe of an rpi controllers",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cedricbalard/rpi-rest-leds.git"
+  },
+  "keywords": [
+    "REST",
+    "LEDS",
+    "RPI",
+    "GPIO",
+    "RASPBERRY",
+    "STRIPE"
+  ],
+  "author": {
+    "name"  : "Cédric Balard",
+    "email" : "cedric.bld@gmail.com"
+  },
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/cedricbalard/rpi-rest-leds/issues"
+  },
+  "homepage": "https://github.com/cedricbalard/rpi-rest-leds#readme"
+}
