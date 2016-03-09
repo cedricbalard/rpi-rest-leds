@@ -1,7 +1,7 @@
 [
   {
     "method"  : "get",
-    "path": "/rpio",
+    "path": "/rpio/config",
     "controller" : {
       "name"  : "rpio",
       "fn"  : "getConfig"

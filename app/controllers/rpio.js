@@ -14,6 +14,7 @@ var rpio    = require('rpio');
  */
 exports.getConfig = function (req, res, next) {
 
+  this.get('logger').debug('[ rpio.getConfig ] - retrieve config')
 
   // default response
   res.jsonp(this.rpioConfig || {});
@@ -30,8 +31,9 @@ exports.setStandard = function (req, res, next) {
 
   // joi validation
   var schema = joi.object().required().keys({
-    pin   : joi.number().integer().required().valid([12, 19, 35, 35]),
-    value : joi.number().integer().optional().min(0).max(100).default(100)
+    pin       : joi.number().integer().required().valid([12, 19, 35, 35]),
+    value     : joi.number().optional().min(0).max(100).default(100),
+    interval  : joi.number().integer().optional().min(0).max(1000).default(5),
   });
 
   // Made a joi validation
@@ -50,17 +52,58 @@ exports.setStandard = function (req, res, next) {
     });
   }
 
+  // floor the value to increaze precision
+  result.value.value = Math.floor(result.value.value * 10);
+
+  // try to retrieve actual conf of pin
+  var confPin = _.find(this.rpioConfig, {
+    pin   : result.value.pin,
+    mode  : 'standard'
+  });
+
+  // Check if conf is already set to change value of led with an cool effect
+  if (!_.isUndefined(confPin)) {
+
+    // determine how the pin should be variate
+    var direction = result.value.value <= confPin.value ? -1 : 1;
+
+    // FIXME : If lot of request was send the led is like stromboscop, so add process to clean previous interval before create new
+    // set interval to change the value of the output slowly
+    var pulse = setInterval(function () {
+
+      // update value
+      rpio.pwmSetData(result.value.pin, confPin.value);
+
+      // check if the value of output correpond to the needed value
+      if (confPin.value === result.value.value) {
+
+        // clearInterval
+        clearInterval(pulse);
+        return;
+      }
+
+      // increment the value
+      confPin.value += direction;
+    }, result.value.interval);
+
+    this.get('logger').info('[ rpio.setStandard ] - The value of pin : ' + result.value.pin +
+    ' was move from ' + confPin.value/10 + '% to ' + result.value.value/10 + '%');
+  } else {
+
+    // Enable PWM on the chosen pin and set the clock and range.
+    rpio.open(result.value.pin, rpio.PWM);
+    rpio.pwmSetClockDivider(32);
+    rpio.pwmSetRange(result.value.pin, 1000);
+    rpio.pwmSetData(result.value.pin, result.value.value);
+
+    this.get('logger').info('[ rpio.setStandard ] - The value of pin : ' + result.value.pin +
+    ' was moved to ' + result.value.value/10 + '%');
+  }
+
   // update config
   updateConfig.apply(this, [ 'standard', result.value ]);
 
-  // Enable PWM on the chosen pin and set the clock and range.
-  rpio.open(result.value.pin, rpio.PWM);
-  rpio.pwmSetClockDivider(32);
-  rpio.pwmSetRange(result.value.pin, 100);
-  rpio.pwmSetData(result.value.pin, result.value.value);
-
-  this.get('logger').info('[ rpio.setStandard ] - The value of pin : ' + result.value.pin +
-  ' to ' + result.value.value + '%');
+  // return the response
   return res.jsonp({
     status  : 'success',
     message : 'Value updated',
@@ -126,26 +169,31 @@ var updateConfig = function (mode, result) {
 
   // default config
   var config =   {
-    mode  : 'standard',
+    mode  : mode,
     value : result.value,
     pin   : result.pin
   };
 
+  // check if config object is set
   if (_.isUndefined(this.rpioConfig)) {
 
+    // set config
     this.rpioConfig = [
       config
     ];
   } else {
 
+    // Read all items in array and remove the config for pin
     this.rpioConfig = _.compact(_.map(this.rpioConfig, function (item) {
 
+      // check if new pin equals to pin of item
       if (item.pin !== result.pin) {
 
         return item;
       }
     }));
 
+    // add the new config for this pin
     this.rpioConfig.push(config);
   }
 };
