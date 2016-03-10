@@ -33,7 +33,7 @@ exports.setStandard = function (req, res, next) {
   var schema = joi.object().required().keys({
     pin       : joi.number().integer().required().valid([12, 19, 35, 35]),
     value     : joi.number().optional().min(0).max(100).default(100),
-    interval  : joi.number().integer().optional().min(0).max(1000).default(5),
+    delay     : joi.number().integer().optional().min(0).max(5000).default(1000),
   });
 
   // Made a joi validation
@@ -61,30 +61,36 @@ exports.setStandard = function (req, res, next) {
     mode  : 'standard'
   });
 
+  var interval = {};
+
   // Check if conf is already set to change value of led with an cool effect
   if (!_.isUndefined(confPin)) {
 
     // determine how the pin should be variate
     var direction = result.value.value <= confPin.value ? -1 : 1;
 
-    // FIXME : If lot of request was send the led is like stromboscop, so add process to clean previous interval before create new
+    // determine interval delay
+    var inter = Math.floor(result.value.delay/Math.abs(result.value.value - confPin.value));
+
+    clearInterval(confPin.interval);
+
     // set interval to change the value of the output slowly
-    var pulse = setInterval(function () {
+    interval = setInterval(function () {
 
       // update value
       rpio.pwmSetData(result.value.pin, confPin.value);
 
       // check if the value of output correpond to the needed value
       if (confPin.value === result.value.value) {
-
+        
         // clearInterval
-        clearInterval(pulse);
+        clearInterval(interval);
         return;
       }
 
       // increment the value
       confPin.value += direction;
-    }, result.value.interval);
+    }, inter);
 
     this.get('logger').info('[ rpio.setStandard ] - The value of pin : ' + result.value.pin +
     ' was move from ' + confPin.value/10 + '% to ' + result.value.value/10 + '%');
@@ -101,7 +107,7 @@ exports.setStandard = function (req, res, next) {
   }
 
   // update config
-  updateConfig.apply(this, [ 'standard', result.value ]);
+  updateConfig.apply(this, [ 'standard', result.value, { interval : interval } ]);
 
   // return the response
   return res.jsonp({
@@ -165,14 +171,16 @@ exports.setOff = function (req, res, next) {
  * @param  {[type]} result [description]
  * @return {[type]}        [description]
  */
-var updateConfig = function (mode, result) {
+var updateConfig = function (mode, result, optionalData) {
+
+  optionalData = optionalData || {};
 
   // default config
-  var config =   {
+  var config =   _.merge({
     mode  : mode,
     value : result.value,
     pin   : result.pin
-  };
+  }, optionalData);
 
   // check if config object is set
   if (_.isUndefined(this.rpioConfig)) {
